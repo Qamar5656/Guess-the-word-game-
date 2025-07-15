@@ -1,15 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 
 const GuessWord = () => {
   const [number, setNumber] = useState("");
   const [message, setMessage] = useState("");
   const [tryCount, setTryCount] = useState(0);
   const [target, setTarget] = useState(
-    useRef(Math.floor(Math.random() * 100) + 1)
+    () => Math.floor(Math.random() * 100) + 1
   );
 
   const handleCheckNumber = () => {
-    setTryCount((prev) => prev + 1);
     const guess = Number(number);
 
     if (!guess) {
@@ -22,20 +21,31 @@ const GuessWord = () => {
       return;
     }
 
-    if (guess > target.current) {
+    setTryCount((prev) => prev + 1);
+
+    if (guess > target) {
       setMessage("Choose a smaller number. Your number is too big.");
-    } else if (guess < target.current) {
+    } else if (guess < target) {
       setMessage("Choose a greater number. Your number is too small.");
     } else {
-      setMessage("🎉 Congratulations! You guessed the number.");
+      handleCorrectGuess();
     }
+
     setNumber("");
   };
+
   const handleReset = () => {
     setMessage("");
     setNumber("");
     setTryCount(0);
     setTarget(Math.floor(Math.random() * 100) + 1);
+  };
+
+  const handleCorrectGuess = () => {
+    setMessage("🎉 Congratulations! You guessed the number. Game Over");
+    setTimeout(() => {
+      handleReset();
+    }, 3000);
   };
 
   return (
@@ -68,12 +78,12 @@ const GuessWord = () => {
         >
           Reset Game
         </button>
-        {tryCount > 0 ? <p>Your attempts are {tryCount}</p> : ""}
+        {tryCount > 0 && <p>Your attempts are {tryCount}</p>}
       </div>
       <div className="container text-center py-7">
         <p className="text-black">{message}</p>
         {message.includes("Congratulations") && (
-          <p>The Target number was {target.current}</p>
+          <p>The Target number was {target}</p>
         )}
       </div>
     </div>
